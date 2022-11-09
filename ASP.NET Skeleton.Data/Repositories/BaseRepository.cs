@@ -9,7 +9,7 @@ namespace ASP.NET_Skeleton.Data.Repositories
     {
         private readonly DbSet<TClass> _table;
         private readonly ILogger<BaseRepository<TClass>> _logger;
-        
+
         public BaseRepository(ApplicationDbContext applicationDbContext, ILogger<BaseRepository<TClass>> logger)
         {
             var context = applicationDbContext ?? throw new ArgumentNullException(nameof(applicationDbContext));

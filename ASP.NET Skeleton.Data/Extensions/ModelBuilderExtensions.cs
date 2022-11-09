@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ASP.NET_Skeleton.Data.Entities;
+﻿using ASP.NET_Skeleton.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace ASP.NET_Skeleton.Data.Extensions

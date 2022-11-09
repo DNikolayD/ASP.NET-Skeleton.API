@@ -1,5 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
-using ASP.NET_Skeleton.Data.Extensions;
+﻿using ASP.NET_Skeleton.Data.Extensions;
+using System.ComponentModel.DataAnnotations;
 
 namespace ASP.NET_Skeleton.Data.Entities
 {

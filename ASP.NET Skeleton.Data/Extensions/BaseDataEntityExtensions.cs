@@ -1,10 +1,5 @@
-﻿using ASP.NET_Skeleton.Data.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ASP.NET_Skeleton.Common;
+﻿using ASP.NET_Skeleton.Common;
+using ASP.NET_Skeleton.Data.Entities;
 
 namespace ASP.NET_Skeleton.Data.Extensions
 {
@@ -19,7 +14,7 @@ namespace ASP.NET_Skeleton.Data.Extensions
 
             if (baseDataEntity.IsDeletable)
             {
-                baseDataEntity.IsDeleted = (bool) (baseDataEntity.IsDeleted?.MapTo(typeof(bool)) ?? false);
+                baseDataEntity.IsDeleted = (bool)(baseDataEntity.IsDeleted?.MapTo(typeof(bool)) ?? false);
                 if (baseDataEntity.IsDeleted.Value)
                 {
                     baseDataEntity.DeletedOn = DateTime.UtcNow;
