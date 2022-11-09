@@ -18,4 +18,5 @@ namespace ASP.NET_Skeleton.Data.Repositories
         Task<BaseDataResponse> SaveAsync();
 
         Task<BaseDataResponse> FilterAsync(BaseDataRequest request);
+    }
 }
