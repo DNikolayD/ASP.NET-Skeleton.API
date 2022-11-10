@@ -2,8 +2,8 @@
 {
     public class BaseDataRequest
     {
-        public string Origin { get; set; }
-        public string Type { get; set; }
-        public object Payload { get; set; }
+        public string Origin { get; set; } = default!;
+        public string Type { get; set; } = default!;
+        public object Payload { get; set; } = default!;
     }
 }

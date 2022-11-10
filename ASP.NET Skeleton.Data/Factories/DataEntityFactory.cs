@@ -1,17 +1,14 @@
-﻿namespace ASP.NET_Skeleton.Data.Factories
-{
-    public class DataEntityFactory<TClass> where TClass : class
-    {
-        public TClass? InitialiseEntity(Dictionary<string, object> properties)
-        {
-            var type = typeof(TClass);
-            var result = Activator.CreateInstance(type);
-            foreach (var property in properties)
-            {
-                result?.GetType().GetProperty(property.Key)?.SetValue(result, property.Value);
-            }
+﻿using ASP.NET_Skeleton.Common;
 
-            return result as TClass;
+namespace ASP.NET_Skeleton.Data.Factories
+{
+    public class DataEntityFactory<TClass> : BaseFactory<TClass> where TClass : class 
+    {
+        public BaseValidator<TClass> Validator { get; } = new BaseValidator<TClass>();
+
+        public void Validate(TClass entity)
+        {
+            Validator.Validate(entity);
         }
     }
 }

@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ASP.NET_Skeleton.Data.Entities
 {
-    public class BaseDataEntity<TKey>
+    public class BaseDataEntity<TKey> : IBaseDataEntity<TKey>
     {
         [Key]
         public TKey Id { get; set; } = default!;
