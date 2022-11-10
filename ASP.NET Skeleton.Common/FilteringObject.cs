@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace ASP.NET_Skeleton.Common
 {
-    internal class FilteringObject
+    public class FilteringObject
     {
+        public string PropertyName { get; set; } = default!;
+
+        public object Value { get; set; } = default!;
     }
 }

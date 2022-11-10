@@ -88,15 +88,15 @@ namespace ASP.NET_Skeleton.Data.Repositories
         {
             var baseFactory = new BaseFactory<BaseDataResponse>();
             var response = baseFactory.InitialiseEntity(new List<KeyValuePair<string, object>>()
-                {new("Object", $"{this.GetType().Name}, UpdateAsync")});
+                {new("Object", $"{this.GetType().Name}, Update")});
             var entity = (TClass)request.Payload.MapTo(typeof(TClass));
             _factory.Validator.Validate(entity);
             if (_factory.Validator.Errors.Any())
             {
-                response.Errors.AddRange(_factory.Validator.Errors);
+                response!.Errors.AddRange(_factory.Validator.Errors);
             }
 
-            response.IsSuccessful = !response.Errors.Any();
+            response!.IsSuccessful = !response.Errors.Any();
             if (response.IsSuccessful)
             {
                 _table.Attach(entity);
@@ -107,19 +107,50 @@ namespace ASP.NET_Skeleton.Data.Repositories
             return response;
         }
 
-        public Task<BaseDataResponse> DeleteAsync(BaseDataRequest request)
+        public async Task<BaseDataResponse> DeleteAsync(BaseDataRequest request)
         {
-            throw new NotImplementedException();
+            var baseFactory = new BaseFactory<BaseDataResponse>();
+            var response = baseFactory.InitialiseEntity(new List<KeyValuePair<string, object>>()
+                {new("Object", $"{this.GetType().Name}, DeleteAsync")});
+            var entity = (TClass)(await GetByIdAsync(request)).Payload;
+            entity.GetType().GetProperties().Where(p => p.CanWrite && p.CanRead && p.Name.EndsWith("Id") && p.Name != "Id").ToList().ForEach(p => p.SetValue(p, null));
+            _table.Remove(entity);
+            response!.IsSuccessful = !_table.Contains(entity);
+            response.Payload = !_table.Contains(entity);
+            _logger.LogInformation(response.GetMessage());
+            return response;
         }
 
-        public Task<BaseDataResponse> SaveAsync()
+        public async Task<BaseDataResponse> SaveAsync()
         {
-            throw new NotImplementedException();
+            var baseFactory = new BaseFactory<BaseDataResponse>();
+            var response = baseFactory.InitialiseEntity(new List<KeyValuePair<string, object>>()
+                {new("Object", $"{this.GetType().Name}, SaveAsync")});
+            var changes = await _context.SaveChangesAsync();
+            response!.IsSuccessful = changes > 0;
+            response.Payload = changes;
+            _logger.LogInformation(response.GetMessage());
+            return response;
         }
 
-        public Task<BaseDataResponse> FilterAsync(BaseDataRequest request)
+        public async Task<BaseDataResponse> FilterAsync(BaseDataRequest request)
         {
-            throw new NotImplementedException();
+            var baseFactory = new BaseFactory<BaseDataResponse>();
+            var response = baseFactory.InitialiseEntity(new List<KeyValuePair<string, object>>()
+                {new("Object", $"{this.GetType().Name}, FilterAsync")});
+            var payload = request.Payload.MapTo(typeof(FilteringObject));
+            var filter = (FilteringObject)payload;
+            var propertyName = filter.PropertyName;
+            var value = filter.Value;
+            var all = (await GetAllAsync()).Payload as List<TClass>;
+            if (all != null && all.Exists(x => x.GetType().GetProperty(propertyName) != null) && all.Exists(x => x.GetType().GetProperty(propertyName)?.GetType() == value.GetType()))
+            {
+                all = all.FindAll(x => x.GetType().GetProperty(propertyName)?.GetValue(x) == value);
+            }
+            response!.IsSuccessful = true;
+            if (all != null) response.Payload = all;
+            _logger.LogInformation(response.GetMessage());
+            return response;
         }
     }
 }
