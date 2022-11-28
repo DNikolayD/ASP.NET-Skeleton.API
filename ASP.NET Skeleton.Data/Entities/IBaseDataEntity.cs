@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ASP.NET_Skeleton.Data.Entities
+﻿namespace ASP.NET_Skeleton.Data.Entities
 {
     public interface IBaseDataEntity<TKey>
     {

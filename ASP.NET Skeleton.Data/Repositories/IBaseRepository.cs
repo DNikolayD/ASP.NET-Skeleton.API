@@ -1,24 +1,23 @@
-﻿using ASP.NET_Skeleton.Data.Factories;
-using ASP.NET_Skeleton.Data.Requests;
-using ASP.NET_Skeleton.Data.Responses;
+﻿using ASP.NET_Skeleton.Common;
 
 namespace ASP.NET_Skeleton.Data.Repositories
 {
-    public interface IBaseRepository<TClass, TFactory> where TClass : class, TFactory where TFactory : DataEntityFactory<TClass>
-
+    public interface IBaseRepository 
     {
-    Task<BaseDataResponse> GetAllAsync();
+        BaseResponse GetMany(BaseRequest request);
 
-    Task<BaseDataResponse> GetByIdAsync(BaseDataRequest request);
+        BaseResponse GetById(BaseRequest request);
 
-    Task<BaseDataResponse> InsertAsync(BaseDataRequest request);
+        Task<BaseResponse> InsertAsync(BaseRequest request);
 
-    BaseDataResponse Update(BaseDataRequest request);
+        BaseResponse Update(BaseRequest request);
 
-    Task<BaseDataResponse> DeleteAsync(BaseDataRequest request);
+        BaseResponse Delete(BaseRequest request);
 
-    Task<BaseDataResponse> SaveAsync();
+        Task<BaseResponse> SaveAsync();
 
-    Task<BaseDataResponse> FilterAsync(BaseDataRequest request);
+        BaseResponse Filter(BaseRequest request);
+
+        BaseResponse Sort(BaseRequest request);
     }
 }

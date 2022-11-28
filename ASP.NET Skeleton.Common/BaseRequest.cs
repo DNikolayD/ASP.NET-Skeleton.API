@@ -1,6 +1,6 @@
-﻿namespace ASP.NET_Skeleton.Data.Requests
+﻿namespace ASP.NET_Skeleton.Common
 {
-    public class BaseDataRequest
+    public class BaseRequest
     {
         public string Origin { get; set; } = default!;
         public string Type { get; set; } = default!;
