@@ -1,6 +1,6 @@
 ﻿namespace ASP.NET_Skeleton.Common
 {
-    public abstract class BaseResponse
+    public class BaseResponse
     {
         public DateTime CreatedOn { get; }
 
@@ -12,7 +12,7 @@
 
         public object Payload { get; set; } = default!;
 
-        protected BaseResponse()
+        public BaseResponse()
         {
             CreatedOn = DateTime.UtcNow;
             Errors = new List<string>();

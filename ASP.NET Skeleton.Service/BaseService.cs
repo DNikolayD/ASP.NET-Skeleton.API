@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 
 namespace ASP.NET_Skeleton.Service
 {
-    public class BaseService<TFactory, TClass> : IBaseService where TFactory : BaseFactory<TClass>, TClass where TClass : class
+    public abstract class BaseService<TFactory, TClass> : IBaseService where TClass : class where TFactory : BaseFactory<TClass>
     {
         private readonly IBaseRepository _repository;
 
@@ -12,7 +12,7 @@ namespace ASP.NET_Skeleton.Service
 
         private readonly ILogger<BaseService<TFactory, TClass>> _logger;
 
-        public BaseService(IBaseRepository repository, TFactory factory, ILogger<BaseService<TFactory, TClass>> logger)
+        protected BaseService(IBaseRepository repository, TFactory factory, ILogger<BaseService<TFactory, TClass>> logger)
         {
             _repository = repository;
             _factory = factory;
@@ -63,7 +63,7 @@ namespace ASP.NET_Skeleton.Service
         {
             var origin = $"{this.GetType().Name}, GetMany";
             request.Origin = origin;
-            var response = _repository.GetById(request);
+            var response = _repository.GetMany(request);
             _factory.Validator.Validate(response);
             _logger.LogInformation(response.GetMessage());
             return response;
@@ -84,7 +84,7 @@ namespace ASP.NET_Skeleton.Service
         {
             var origin = $"{this.GetType().Name}, GetSorted";
             request.Origin = origin;
-            var response = _repository.Sort(request);
+            var response = _repository.Filter(request);
             _factory.Validator.Validate(response);
             _logger.LogInformation(response.GetMessage());
             return response;

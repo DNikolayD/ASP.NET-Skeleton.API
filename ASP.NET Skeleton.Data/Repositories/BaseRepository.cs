@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 
 namespace ASP.NET_Skeleton.Data.Repositories
 {
-    public sealed class BaseRepository<TClass, TFactory> : IBaseRepository where TClass : class, TFactory where TFactory : BaseFactory<TClass>
+    public abstract class BaseRepository<TClass, TFactory> : IBaseRepository where TClass : class, TFactory where TFactory : BaseFactory<TClass>
     {
         private readonly DbSet<TClass> _table;
         private readonly ApplicationDbContext _context;
