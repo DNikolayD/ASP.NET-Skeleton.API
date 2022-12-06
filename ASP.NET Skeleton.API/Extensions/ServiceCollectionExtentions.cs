@@ -1,9 +1,9 @@
-﻿using System.Reflection;
-using ASP.NET_Skeleton.Common;
+﻿using ASP.NET_Skeleton.Common;
 using ASP.NET_Skeleton.Data;
 using ASP.NET_Skeleton.Data.Repositories;
 using ASP.NET_Skeleton.Service.InjectionTypes;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection;
 
 namespace ASP.NET_Skeleton.API.Extensions
 {

@@ -6,7 +6,7 @@
 
         public static string Origin => default!;
 
-        public bool IsSuccessful { get; set; }
+        public bool IsSuccessful { get; }
 
         public List<string> Errors { get; }
 

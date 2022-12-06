@@ -51,7 +51,6 @@ namespace ASP.NET_Skeleton.Data.Repositories
             var entity = request.Payload.MapTo<TClass>();
             _factory.Validator.Validate(entity);
             response!.Errors.AddRange(_factory.Validator.Errors);
-            response.IsSuccessful = !response.Errors.Any();
             if (response.IsSuccessful)
             {
                 await _table.AddAsync(entity);
@@ -71,8 +70,7 @@ namespace ASP.NET_Skeleton.Data.Repositories
             {
                 response!.Errors.AddRange(_factory.Validator.Errors);
             }
-            response!.IsSuccessful = !response.Errors.Any();
-            if (response.IsSuccessful)
+            if (response!.IsSuccessful)
             {
                 _table.Attach(entity);
                 _context.Entry(entity).State = EntityState.Modified;
@@ -89,8 +87,7 @@ namespace ASP.NET_Skeleton.Data.Repositories
             var entity = (TClass)GetById(request).Payload;
             typeof(TClass).GetProperties().Where(p => p.CanWrite && p.CanRead && p.Name.EndsWith("Id") && p.Name != "Id").ToList().ForEach(p => p.SetValue(p, null));
             _table.Remove(entity);
-            response!.IsSuccessful = !_table.Contains(entity);
-            response.Payload = !_table.Contains(entity);
+            response!.Payload = !_table.Contains(entity);
             _logger.LogInformation(response.GetMessage());
             return response;
         }
@@ -100,8 +97,7 @@ namespace ASP.NET_Skeleton.Data.Repositories
             var origin = $"{this.GetType().Name}, SaveAsync";
             var response = _responseFactory.InitialiseEntity(origin);
             var changes = await _context.SaveChangesAsync();
-            response!.IsSuccessful = changes > 0;
-            response.Payload = changes;
+            response!.Payload = changes;
             _logger.LogInformation(response.GetMessage());
             return response;
         }
@@ -115,8 +111,7 @@ namespace ASP.NET_Skeleton.Data.Repositories
             var value = filter.Value;
             FormattableString query = $"SELECT TOP {filter.Amount} FROM {typeof(TClass).Name} WHERE {propertyName} = '{value}'";
             var all = _table.FromSql(query);
-            response!.IsSuccessful = true;
-            response.Payload = all;
+            response!.Payload = all;
             _logger.LogInformation(response.GetMessage());
             return response;
         }
@@ -129,8 +124,7 @@ namespace ASP.NET_Skeleton.Data.Repositories
             var propertyName = filter.PropertyName;
             FormattableString query = $"SELECT TOP {filter.Amount} ORDER BY {propertyName}";
             var all = _table.FromSql(query);
-            response!.IsSuccessful = true;
-            response.Payload = all;
+            response!.Payload = all;
             _logger.LogInformation(response.GetMessage());
             return response;
         }

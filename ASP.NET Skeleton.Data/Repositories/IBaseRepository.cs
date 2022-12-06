@@ -2,7 +2,7 @@
 
 namespace ASP.NET_Skeleton.Data.Repositories
 {
-    public interface IBaseRepository 
+    public interface IBaseRepository
     {
         BaseResponse GetMany(BaseRequest request);
 
