@@ -12,8 +12,6 @@ namespace ASP.NET_Skeleton.Service
 
         private readonly ILogger<BaseService<TFactory, TClass>> _logger;
 
-        private readonly BaseFactory<BaseResponse> _baseFactory = new();
-
         public BaseService(IBaseRepository repository, TFactory factory, ILogger<BaseService<TFactory, TClass>> logger)
         {
             _repository = repository;
@@ -23,37 +21,73 @@ namespace ASP.NET_Skeleton.Service
 
         public async Task<BaseResponse> AddAsync(BaseRequest request)
         {
-            throw new NotImplementedException();
+            var origin = $"{this.GetType().Name}, AddAsync";
+            request.Origin = origin;
+            var response = await _repository.InsertAsync(request);
+            _factory.Validator.Validate(response);
+            _logger.LogInformation(response.GetMessage());
+            return response;
         }
 
-        public async Task<BaseResponse> RemoveAsync(BaseRequest request)
+        public BaseResponse Remove(BaseRequest request)
         {
-            throw new NotImplementedException();
+            var origin = $"{this.GetType().Name}, Remove";
+            request.Origin = origin;
+            var response = _repository.Delete(request);
+            _factory.Validator.Validate(response);
+            _logger.LogInformation(response.GetMessage());
+            return response;
         }
 
-        public async Task<BaseResponse> UpdateAsync(BaseRequest request)
+        public BaseResponse Update(BaseRequest request)
         {
-            throw new NotImplementedException();
+            var origin = $"{this.GetType().Name}, Update";
+            request.Origin = origin;
+            var response = _repository.Update(request);
+            _factory.Validator.Validate(response);
+            _logger.LogInformation(response.GetMessage());
+            return response;
         }
 
-        public async Task<BaseResponse> GetAsync(BaseRequest request)
+        public BaseResponse Get(BaseRequest request)
         {
-            throw new NotImplementedException();
+            var origin = $"{this.GetType().Name}, Get";
+            request.Origin = origin;
+            var response = _repository.GetById(request);
+            _factory.Validator.Validate(response);
+            _logger.LogInformation(response.GetMessage());
+            return response;
         }
 
-        public async Task<BaseResponse> GetMany(BaseRequest request)
+        public BaseResponse GetMany(BaseRequest request)
         {
-            throw new NotImplementedException();
+            var origin = $"{this.GetType().Name}, GetMany";
+            request.Origin = origin;
+            var response = _repository.GetById(request);
+            _factory.Validator.Validate(response);
+            _logger.LogInformation(response.GetMessage());
+            return response;
         }
 
-        public async Task<BaseResponse> GetSortedAsync(BaseRequest request)
+        public BaseResponse GetSorted(BaseRequest request)
         {
-            throw new NotImplementedException();
+            var origin = $"{this.GetType().Name}, GetSorted";
+            request.Origin = origin;
+            var response = _repository.Sort(request);
+            _factory.Validator.Validate(response);
+            _logger.LogInformation(response.GetMessage());
+            return response;
+
         }
 
-        public async Task<BaseResponse> GetFilteredAsync(BaseRequest request)
+        public BaseResponse GetFiltered(BaseRequest request)
         {
-            throw new NotImplementedException();
+            var origin = $"{this.GetType().Name}, GetSorted";
+            request.Origin = origin;
+            var response = _repository.Sort(request);
+            _factory.Validator.Validate(response);
+            _logger.LogInformation(response.GetMessage());
+            return response;
         }
     }
 }

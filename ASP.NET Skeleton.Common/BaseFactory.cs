@@ -2,6 +2,8 @@
 {
     public class BaseFactory<TClass> where TClass : class
     {
+        public BaseValidator Validator { get; } = new();
+
         protected virtual TClass? InitialiseEntity(List<KeyValuePair<string, object>> properties)
         {
             var type = typeof(TClass);

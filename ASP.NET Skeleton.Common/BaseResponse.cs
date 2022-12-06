@@ -1,18 +1,18 @@
 ﻿namespace ASP.NET_Skeleton.Common
 {
-    public class BaseResponse
+    public abstract class BaseResponse
     {
-        public DateTime CreatedOn { get; set; }
+        public DateTime CreatedOn { get; }
 
-        public string Origin { get; set; } = default!;
+        public static string Origin => default!;
 
         public bool IsSuccessful { get; set; }
 
-        public List<string> Errors { get; set; }
+        public List<string> Errors { get; }
 
         public object Payload { get; set; } = default!;
 
-        public BaseResponse()
+        protected BaseResponse()
         {
             CreatedOn = DateTime.UtcNow;
             Errors = new List<string>();

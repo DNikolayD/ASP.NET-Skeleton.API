@@ -48,7 +48,7 @@ namespace ASP.NET_Skeleton.Data.Repositories
         {
             var origin = $"{this.GetType().Name}, InsertAsync";
             var response = _responseFactory.InitialiseEntity(origin);
-            var entity = (TClass)request.Payload.MapTo(typeof(TClass));
+            var entity = request.Payload.MapTo<TClass>();
             _factory.Validator.Validate(entity);
             response!.Errors.AddRange(_factory.Validator.Errors);
             response.IsSuccessful = !response.Errors.Any();
@@ -65,7 +65,7 @@ namespace ASP.NET_Skeleton.Data.Repositories
         {
             var origin = $"{this.GetType().Name}, Update";
             var response = _responseFactory.InitialiseEntity(origin);
-            var entity = (TClass)request.Payload.MapTo(typeof(TClass));
+            var entity = request.Payload.MapTo<TClass>();
             _factory.Validator.Validate(entity);
             if (_factory.Validator.Errors.Any())
             {
@@ -87,7 +87,7 @@ namespace ASP.NET_Skeleton.Data.Repositories
             var origin = $"{this.GetType().Name}, Delete";
             var response = _responseFactory.InitialiseEntity(origin);
             var entity = (TClass)GetById(request).Payload;
-            entity.GetType().GetProperties().Where(p => p.CanWrite && p.CanRead && p.Name.EndsWith("Id") && p.Name != "Id").ToList().ForEach(p => p.SetValue(p, null));
+            typeof(TClass).GetProperties().Where(p => p.CanWrite && p.CanRead && p.Name.EndsWith("Id") && p.Name != "Id").ToList().ForEach(p => p.SetValue(p, null));
             _table.Remove(entity);
             response!.IsSuccessful = !_table.Contains(entity);
             response.Payload = !_table.Contains(entity);
@@ -110,8 +110,7 @@ namespace ASP.NET_Skeleton.Data.Repositories
         {
             var origin = $"{this.GetType().Name}, Filter";
             var response = _responseFactory.InitialiseEntity(origin);
-            var payload = request.Payload.MapTo(typeof(FilteringObject));
-            var filter = (FilteringObject)payload;
+            var filter = request.Payload.MapTo<FilteringObject>();
             var propertyName = filter.PropertyName;
             var value = filter.Value;
             FormattableString query = $"SELECT TOP {filter.Amount} FROM {typeof(TClass).Name} WHERE {propertyName} = '{value}'";
@@ -126,8 +125,7 @@ namespace ASP.NET_Skeleton.Data.Repositories
         {
             var origin = $"{this.GetType().Name}, Sort";
             var response = _responseFactory.InitialiseEntity(origin);
-            var payload = request.Payload.MapTo(typeof(FilteringObject));
-            var filter = (FilteringObject)payload;
+            var filter = request.Payload.MapTo<FilteringObject>();
             var propertyName = filter.PropertyName;
             FormattableString query = $"SELECT TOP {filter.Amount} ORDER BY {propertyName}";
             var all = _table.FromSql(query);

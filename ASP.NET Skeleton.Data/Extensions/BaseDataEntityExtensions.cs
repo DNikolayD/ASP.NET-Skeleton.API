@@ -14,7 +14,7 @@ namespace ASP.NET_Skeleton.Data.Extensions
 
             if (baseDataEntity.IsDeletable)
             {
-                baseDataEntity.IsDeleted = (bool)(baseDataEntity.IsDeleted?.MapTo(typeof(bool)) ?? false);
+                baseDataEntity.IsDeleted ??= false; 
                 if (baseDataEntity.IsDeleted.Value)
                 {
                     baseDataEntity.DeletedOn = DateTime.UtcNow;
