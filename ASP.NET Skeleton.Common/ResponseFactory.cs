@@ -1,14 +1,17 @@
-﻿namespace ASP.NET_Skeleton.Common
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ASP.NET_Skeleton.Common
 {
     public class ResponseFactory : BaseFactory<BaseResponse>
     {
-        public BaseResponse? InitialiseEntity(string origin)
+        public BaseResponse InitialiseEntity()
         {
-            var properties = new List<KeyValuePair<string, object>>
-            {
-                new("Origin", origin)
-            };
-            return base.InitialiseEntity(properties);
+            return Activator.CreateInstance<BaseResponse>();
         }
     }
 }

@@ -1,3 +1,4 @@
+using System.Reflection;
 using ASP.NET_Skeleton.Common;
 using ASP.NET_Skeleton.Data.Repositories;
 using ASP.NET_Skeleton.Service;
@@ -11,15 +12,17 @@ namespace ASP.NET_Skeleton.Tests
         private IBaseService _service = null!;
 
         private Mock<IBaseRepository> _repository = null!;
-        private Mock<ILogger<BaseService<BaseFactory<BaseDto<string>>, BaseDto<string>>>> _logger = null!;
-        private Mock<BaseFactory<BaseDto<string>>> _factory = null!;
+        private Mock<ILogger<BaseService<TestFactory, TestDto>>> _logger = null!;
+        private Mock<TestFactory> _factory = null!;
+        private readonly TestValidator _validator = new();
 
         [SetUp]
         public void Setup()
         {
             _repository = new Mock<IBaseRepository>();
-            _logger = new Mock<ILogger<BaseService<BaseFactory<BaseDto<string>>, BaseDto<string>>>>();
-            _factory = new Mock<BaseFactory<BaseDto<string>>>();
+            _logger = new Mock<ILogger<BaseService<TestFactory, TestDto>>>();
+            _factory = new Mock<TestFactory>();
+            _factory.Setup(x => x.Validator).Returns(_validator);
             _service = new ServiceForTests(_repository.Object,
                 _factory.Object,
                 _logger.Object
@@ -30,7 +33,9 @@ namespace ASP.NET_Skeleton.Tests
         public void Get_ReturnsSuccess()
         {
             //Arrange
-            var request = _fixture.Create<BaseRequest>();
+            var name = _fixture.Create<string>();
+            var payload = _fixture.Build<TestDto>().With(x => x.Name, name).Create();
+            var request = _fixture.Build<BaseRequest>().With(x => x.Payload, payload).Create();
             var response = _fixture.Create<BaseResponse>();
             _repository.Setup(x => x.GetById(It.IsAny<BaseRequest>())).Returns(response);
             //Act
@@ -117,11 +122,54 @@ namespace ASP.NET_Skeleton.Tests
             Assert.That(result.IsSuccessful);
         }
 
-        private class ServiceForTests : BaseService<BaseFactory<BaseDto<string>>, BaseDto<string>>
+        public class ServiceForTests : BaseService<TestFactory, TestDto>
         {
-            public ServiceForTests(IBaseRepository repository, BaseFactory<BaseDto<string>> factory, ILogger<BaseService<BaseFactory<BaseDto<string>>, BaseDto<string>>> logger) : base(repository, factory, logger)
+            public ServiceForTests(IBaseRepository repository, TestFactory factory, ILogger<BaseService<TestFactory, TestDto>> logger) : base(repository, factory, logger)
             {
             }
+        }
+
+        public class TestValidator : BaseValidator
+        {
+            public override void Validate(object obj)
+            {
+                var validators = Assembly.GetAssembly(typeof(TestValidator))!
+                    .GetTypes()
+                    .Where(myType => myType is {IsClass: true} && myType.IsSubclassOf(typeof(BaseValidator)))
+                    .Select(type => (BaseValidator) Activator.CreateInstance(type)!)
+                    .Select(dummy => dummy)
+                    .ToList(); 
+                validators.Sort();
+                foreach (var type in validators.Select(validator => validator.GetType()))
+                {
+                    var parameters = new List<object> {obj}.ToArray();
+                    var methods = type.GetMethods().Where(x => x.Name.Contains("SetRule")).ToList();
+                    var methodName = methods.FirstOrDefault()!.Name;
+                    foreach (var method in methods)
+                    {
+                        method.Invoke(this, parameters);
+                    }
+                }
+                HasErrors = Errors.Any();
+            }
+
+            public void SetRule(object obj)
+            {
+                if (string.IsNullOrWhiteSpace(obj.MapTo<TestDto>().Name))
+                {
+                    Errors.Add("error"); //replace with ErrorConstructor
+                }
+            }
+        }
+
+        public class TestDto : BaseDto<string>
+        {
+            public string Name { get; set; } = string.Empty;
+        }
+
+        public class TestFactory : BaseFactory<TestDto>
+        {
+            public override BaseValidator Validator { get; set; } = new TestValidator();
         }
     }
 }

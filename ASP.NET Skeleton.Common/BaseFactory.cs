@@ -1,8 +1,8 @@
 ﻿namespace ASP.NET_Skeleton.Common
 {
-    public class BaseFactory<TClass> where TClass : class
+    public abstract class BaseFactory<TClass> where TClass : class
     {
-        public BaseValidator Validator { get; } = new();
+        public virtual BaseValidator Validator { get; set; } = new();
 
         protected virtual TClass? InitialiseEntity(List<KeyValuePair<string, object>> properties)
         {

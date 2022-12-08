@@ -10,7 +10,7 @@ namespace ASP.NET_Skeleton.Data.Repositories
         private readonly ApplicationDbContext _context;
         private readonly ILogger<BaseRepository<TClass, TFactory>> _logger;
         private readonly TFactory _factory;
-        private readonly ResponseFactory _responseFactory = new();
+        private readonly RequestFactory _requestFactory = new();
 
         public BaseRepository(ApplicationDbContext applicationDbContext, TFactory factory, ILogger<BaseRepository<TClass, TFactory>> logger)
         {
@@ -25,7 +25,7 @@ namespace ASP.NET_Skeleton.Data.Repositories
         {
             var amount = int.Parse(request.Payload.ToString()!);
             var origin = $"{this.GetType().Name}, GetMany";
-            var response = _responseFactory.InitialiseEntity(origin);
+            var response = _requestFactory.InitialiseEntity(origin);
             FormattableString query = $"SELECT TOP {amount} FROM {typeof(TClass).Name}";
             var entities = _table.FromSql(query);
             response!.Payload = entities;
@@ -36,7 +36,7 @@ namespace ASP.NET_Skeleton.Data.Repositories
         public BaseResponse GetById(BaseRequest request)
         {
             var origin = $"{this.GetType().Name}, GetId";
-            var response = _responseFactory.InitialiseEntity(origin);
+            var response = _requestFactory.InitialiseEntity(origin);
             FormattableString query = $"SELECT * WHERE Id = {request.Payload} FROM {typeof(TClass).Name}";
             var entity = _table.FromSql(query);
             response!.Payload = entity;
@@ -47,7 +47,7 @@ namespace ASP.NET_Skeleton.Data.Repositories
         public async Task<BaseResponse> InsertAsync(BaseRequest request)
         {
             var origin = $"{this.GetType().Name}, InsertAsync";
-            var response = _responseFactory.InitialiseEntity(origin);
+            var response = _requestFactory.InitialiseEntity(origin);
             var entity = request.Payload.MapTo<TClass>();
             _factory.Validator.Validate(entity);
             response!.Errors.AddRange(_factory.Validator.Errors);
@@ -63,7 +63,7 @@ namespace ASP.NET_Skeleton.Data.Repositories
         public BaseResponse Update(BaseRequest request)
         {
             var origin = $"{this.GetType().Name}, Update";
-            var response = _responseFactory.InitialiseEntity(origin);
+            var response = _requestFactory.InitialiseEntity(origin);
             var entity = request.Payload.MapTo<TClass>();
             _factory.Validator.Validate(entity);
             if (_factory.Validator.Errors.Any())
@@ -83,7 +83,7 @@ namespace ASP.NET_Skeleton.Data.Repositories
         public BaseResponse Delete(BaseRequest request)
         {
             var origin = $"{this.GetType().Name}, Delete";
-            var response = _responseFactory.InitialiseEntity(origin);
+            var response = _requestFactory.InitialiseEntity(origin);
             var entity = (TClass)GetById(request).Payload;
             typeof(TClass).GetProperties().Where(p => p.CanWrite && p.CanRead && p.Name.EndsWith("Id") && p.Name != "Id").ToList().ForEach(p => p.SetValue(p, null));
             _table.Remove(entity);
@@ -95,7 +95,7 @@ namespace ASP.NET_Skeleton.Data.Repositories
         public async Task<BaseResponse> SaveAsync()
         {
             var origin = $"{this.GetType().Name}, SaveAsync";
-            var response = _responseFactory.InitialiseEntity(origin);
+            var response = _requestFactory.InitialiseEntity(origin);
             var changes = await _context.SaveChangesAsync();
             response!.Payload = changes;
             _logger.LogInformation(response.GetMessage());
@@ -105,7 +105,7 @@ namespace ASP.NET_Skeleton.Data.Repositories
         public BaseResponse Filter(BaseRequest request)
         {
             var origin = $"{this.GetType().Name}, Filter";
-            var response = _responseFactory.InitialiseEntity(origin);
+            var response = _requestFactory.InitialiseEntity(origin);
             var filter = request.Payload.MapTo<FilteringObject>();
             var propertyName = filter.PropertyName;
             var value = filter.Value;
@@ -119,7 +119,7 @@ namespace ASP.NET_Skeleton.Data.Repositories
         public BaseResponse Sort(BaseRequest request)
         {
             var origin = $"{this.GetType().Name}, Sort";
-            var response = _responseFactory.InitialiseEntity(origin);
+            var response = _requestFactory.InitialiseEntity(origin);
             var filter = request.Payload.MapTo<FilteringObject>();
             var propertyName = filter.PropertyName;
             FormattableString query = $"SELECT TOP {filter.Amount} ORDER BY {propertyName}";

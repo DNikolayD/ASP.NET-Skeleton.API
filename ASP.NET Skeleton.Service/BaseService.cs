@@ -10,6 +10,10 @@ namespace ASP.NET_Skeleton.Service
 
         private readonly TFactory _factory;
 
+        private readonly BaseValidator _validator;
+
+        private readonly ResponseFactory _responseFactory = new();
+
         private readonly ILogger<BaseService<TFactory, TClass>> _logger;
 
         protected BaseService(IBaseRepository repository, TFactory factory, ILogger<BaseService<TFactory, TClass>> logger)
@@ -17,6 +21,7 @@ namespace ASP.NET_Skeleton.Service
             _repository = repository;
             _factory = factory;
             _logger = logger;
+            _validator = _factory.Validator;
         }
 
         public async Task<BaseResponse> AddAsync(BaseRequest request)
@@ -52,9 +57,17 @@ namespace ASP.NET_Skeleton.Service
         public BaseResponse Get(BaseRequest request)
         {
             var origin = $"{this.GetType().Name}, Get";
+            var response = _responseFactory.InitialiseEntity();
             request.Origin = origin;
-            var response = _repository.GetById(request);
-            _factory.Validator.Validate(response);
+            _factory.Validator.Validate(request.Payload);
+            if (_validator.HasErrors)
+            {
+                response.Errors = _validator.Errors.ToList();
+            }
+            else
+            {
+                response = _repository.GetById(request);
+            }
             _logger.LogInformation(response.GetMessage());
             return response;
         }

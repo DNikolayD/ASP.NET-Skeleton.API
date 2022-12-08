@@ -1,6 +1,6 @@
 ﻿namespace ASP.NET_Skeleton.Common
 {
-    public class FilteringObject
+    public abstract class FilteringObject
     {
         public string PropertyName { get; set; } = default!;
 
