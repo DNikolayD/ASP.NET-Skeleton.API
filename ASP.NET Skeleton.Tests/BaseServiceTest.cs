@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using ASP.NET_Skeleton.Common;
 using ASP.NET_Skeleton.Data.Repositories;
@@ -7,7 +8,7 @@ using Microsoft.Extensions.Logging;
 
 namespace ASP.NET_Skeleton.Tests
 {
-    public class Tests : BaseTest
+    public abstract class Tests : BaseTest
     {
         private IBaseService _service = null!;
 
@@ -124,14 +125,14 @@ namespace ASP.NET_Skeleton.Tests
             Assert.That(result.IsSuccessful);
         }
 
-        public class ServiceForTests : BaseService<TestFactory, TestDto>
+        private class ServiceForTests : BaseService<TestFactory, TestDto>
         {
             public ServiceForTests(IBaseRepository repository, TestFactory factory, ILogger<BaseService<TestFactory, TestDto>> logger) : base(repository, factory, logger)
             {
             }
         }
 
-        public class TestValidator : BaseValidator
+        private class TestValidator : BaseValidator
         {
             public override void Validate(object obj)
             {
@@ -153,6 +154,9 @@ namespace ASP.NET_Skeleton.Tests
                 }
             }
 
+#pragma warning disable IDE0079
+            [SuppressMessage("ReSharper", "UnusedMember.Local")]
+#pragma warning restore IDE0079
             public void SetRule(object obj)
             {
                 if (string.IsNullOrWhiteSpace(obj.MapTo<TestDto>().Name))
@@ -167,14 +171,14 @@ namespace ASP.NET_Skeleton.Tests
             }
         }
 
-        public class TestDto : BaseDto<string>
+        private abstract class TestDto : BaseDto<string>
         {
             public string Name { get; set; } = string.Empty;
 
             public List<BaseDto<string>> BaseDtos { get; set; } = new();
         }
 
-        public class TestFactory : BaseFactory<TestDto>
+        private abstract class TestFactory : BaseFactory<TestDto>
         {
             public override BaseValidator Validator { get; set; } = new TestValidator();
         }
