@@ -16,7 +16,7 @@ namespace ASP.NET_Skeleton.API.Extensions
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
             services.AddLogging();
-            services.AddScoped(typeof(IBaseRepository), typeof(BaseRepository<,>));
+            services.AddScoped(typeof(IBaseRepository), typeof(BaseRepository<>));
             services.AddTransient(typeof(BaseFactory<>), typeof(BaseFactory<>));
             services.AddServices();
         }

@@ -2,7 +2,7 @@
 {
     public class BaseResponse : Carrier
     {
-        private List<string> _errors;
+        private List<string> _errors = new();
 
         public DateTime CreatedOn { get; }
 
@@ -23,7 +23,6 @@
         public BaseResponse()
         {
             CreatedOn = DateTime.UtcNow;
-            Errors = new List<string>();
         }
     }
 }

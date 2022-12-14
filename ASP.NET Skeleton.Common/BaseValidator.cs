@@ -1,13 +1,12 @@
-﻿using System.ComponentModel;
-using System.Reflection;
+﻿using System.Reflection;
 
 namespace ASP.NET_Skeleton.Common
 {
     public class BaseValidator
     {
-        public HashSet<string> Errors { get; private set; } = new HashSet<string>();
+        public HashSet<string> Errors { get; } = new();
 
-        public bool HasErrors { get; protected set; }
+        public bool HasErrors => Errors.Any();
 
 
         public virtual void Validate(object obj)
@@ -23,8 +22,6 @@ namespace ASP.NET_Skeleton.Common
             {
                 type.GetMethods().Where(x => x.Name.Contains("SetRule")).ToList().ForEach(x => x.Invoke(this, new[] { obj }));
             }
-
-            HasErrors = Errors.Any();
         }
 
     }

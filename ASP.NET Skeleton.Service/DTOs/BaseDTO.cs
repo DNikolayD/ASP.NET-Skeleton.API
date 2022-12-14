@@ -1,6 +1,6 @@
 ﻿namespace ASP.NET_Skeleton.Service.DTOs
 {
-    public abstract class BaseDto<TKey>
+    public class BaseDto<TKey>
     {
         public TKey Id { get; set; } = default!;
 

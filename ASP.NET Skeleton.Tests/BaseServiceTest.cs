@@ -33,8 +33,10 @@ namespace ASP.NET_Skeleton.Tests
         public void Get_ReturnsSuccess()
         {
             //Arrange
+            var count = _fixture.Create<int>();
             var name = _fixture.Create<string>();
-            var payload = _fixture.Build<TestDto>().With(x => x.Name, name).Create();
+            var dtOs = _fixture.CreateMany<BaseDto<string>>(count);
+            var payload = _fixture.Build<TestDto>().With(x => x.Name, name).With(x => x.BaseDtos, dtOs).Create();
             var request = _fixture.Build<BaseRequest>().With(x => x.Payload, payload).Create();
             var response = _fixture.Create<BaseResponse>();
             _repository.Setup(x => x.GetById(It.IsAny<BaseRequest>())).Returns(response);
@@ -144,20 +146,23 @@ namespace ASP.NET_Skeleton.Tests
                 {
                     var parameters = new List<object> {obj}.ToArray();
                     var methods = type.GetMethods().Where(x => x.Name.Contains("SetRule")).ToList();
-                    var methodName = methods.FirstOrDefault()!.Name;
                     foreach (var method in methods)
                     {
                         method.Invoke(this, parameters);
                     }
                 }
-                HasErrors = Errors.Any();
             }
 
             public void SetRule(object obj)
             {
                 if (string.IsNullOrWhiteSpace(obj.MapTo<TestDto>().Name))
                 {
-                    Errors.Add("error"); //replace with ErrorConstructor
+                    Errors.Add("No Name");
+                }
+
+                if (!obj.MapTo<TestDto>().BaseDtos.Any())
+                {
+                    Errors.Add("List is empty");
                 }
             }
         }
@@ -165,6 +170,8 @@ namespace ASP.NET_Skeleton.Tests
         public class TestDto : BaseDto<string>
         {
             public string Name { get; set; } = string.Empty;
+
+            public List<BaseDto<string>> BaseDtos { get; set; } = new();
         }
 
         public class TestFactory : BaseFactory<TestDto>

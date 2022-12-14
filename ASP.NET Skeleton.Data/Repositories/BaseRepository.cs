@@ -4,20 +4,18 @@ using Microsoft.Extensions.Logging;
 
 namespace ASP.NET_Skeleton.Data.Repositories
 {
-    public abstract class BaseRepository<TClass, TFactory> : IBaseRepository where TClass : class, TFactory where TFactory : BaseFactory<TClass>
+    public abstract class BaseRepository<TClass> : IBaseRepository where TClass : class
     {
         private readonly DbSet<TClass> _table;
         private readonly ApplicationDbContext _context;
-        private readonly ILogger<BaseRepository<TClass, TFactory>> _logger;
-        private readonly TFactory _factory;
+        private readonly ILogger<BaseRepository<TClass>> _logger;
         private readonly RequestFactory _requestFactory = new();
 
-        public BaseRepository(ApplicationDbContext applicationDbContext, TFactory factory, ILogger<BaseRepository<TClass, TFactory>> logger)
+        protected BaseRepository(ApplicationDbContext applicationDbContext, ILogger<BaseRepository<TClass>> logger)
         {
             var context = applicationDbContext ?? throw new ArgumentNullException(nameof(applicationDbContext));
             _context = applicationDbContext ?? throw new ArgumentNullException(nameof(applicationDbContext));
             _logger = logger;
-            _factory = factory;
             _table = context.Set<TClass>();
         }
 
@@ -47,15 +45,10 @@ namespace ASP.NET_Skeleton.Data.Repositories
         public async Task<BaseResponse> InsertAsync(BaseRequest request)
         {
             var origin = $"{this.GetType().Name}, InsertAsync";
-            var response = _requestFactory.InitialiseEntity(origin);
+            var response = _requestFactory.InitialiseEntity(origin)!;
             var entity = request.Payload.MapTo<TClass>();
-            _factory.Validator.Validate(entity);
-            response!.Errors.AddRange(_factory.Validator.Errors);
-            if (response.IsSuccessful)
-            {
-                await _table.AddAsync(entity);
-                response.Payload = _table.Contains(entity);
-            }
+            await _table.AddAsync(entity);
+            response.Payload = _table.Contains(entity);
             _logger.LogInformation(response.GetMessage());
             return response;
         }
@@ -63,19 +56,11 @@ namespace ASP.NET_Skeleton.Data.Repositories
         public BaseResponse Update(BaseRequest request)
         {
             var origin = $"{this.GetType().Name}, Update";
-            var response = _requestFactory.InitialiseEntity(origin);
+            var response = _requestFactory.InitialiseEntity(origin)!;
             var entity = request.Payload.MapTo<TClass>();
-            _factory.Validator.Validate(entity);
-            if (_factory.Validator.Errors.Any())
-            {
-                response!.Errors.AddRange(_factory.Validator.Errors);
-            }
-            if (response!.IsSuccessful)
-            {
-                _table.Attach(entity);
-                _context.Entry(entity).State = EntityState.Modified;
-                response.Payload = _table.Contains(entity);
-            }
+            _table.Attach(entity);
+            _context.Entry(entity).State = EntityState.Modified;
+            response.Payload = _table.Contains(entity);
             _logger.LogInformation(response.GetMessage());
             return response;
         }
@@ -85,7 +70,7 @@ namespace ASP.NET_Skeleton.Data.Repositories
             var origin = $"{this.GetType().Name}, Delete";
             var response = _requestFactory.InitialiseEntity(origin);
             var entity = (TClass)GetById(request).Payload;
-            typeof(TClass).GetProperties().Where(p => p.CanWrite && p.CanRead && p.Name.EndsWith("Id") && p.Name != "Id").ToList().ForEach(p => p.SetValue(p, null));
+            typeof(TClass).GetProperties().Where(p => p is {CanWrite: true, CanRead: true} && p.Name.EndsWith("Id") && p.Name != "Id").ToList().ForEach(p => p.SetValue(p, null));
             _table.Remove(entity);
             response!.Payload = !_table.Contains(entity);
             _logger.LogInformation(response.GetMessage());

@@ -12,8 +12,6 @@ namespace ASP.NET_Skeleton.Service
 
         private readonly BaseValidator _validator;
 
-        private readonly ResponseFactory _responseFactory = new();
-
         private readonly ILogger<BaseService<TFactory, TClass>> _logger;
 
         protected BaseService(IBaseRepository repository, TFactory factory, ILogger<BaseService<TFactory, TClass>> logger)
@@ -57,7 +55,7 @@ namespace ASP.NET_Skeleton.Service
         public BaseResponse Get(BaseRequest request)
         {
             var origin = $"{this.GetType().Name}, Get";
-            var response = _responseFactory.InitialiseEntity();
+            var response = ResponseFactory.InitialiseEntity();
             request.Origin = origin;
             _factory.Validator.Validate(request.Payload);
             if (_validator.HasErrors)
